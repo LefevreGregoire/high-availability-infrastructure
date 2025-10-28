@@ -16,7 +16,7 @@ La topologie du réseau à mettre en place se compose de :
 
 Les trois switches sont interconnectés de manière redondante, formant une **topologie en triangle**. Cette configuration crée plusieurs chemins possibles entre les switches, ce qui pourrait normalement provoquer une boucle de trames Ethernet. Grâce au STP, un des ports sera automatiquement mis en état bloqué, assurant une topologie logique sans boucle tout en maintenant une liaison de secours en cas de panne.
 
-![[triangle.png]]
+![Schéma complet](docs/images/triangle.png)
 
 ## Prérequis
 
@@ -98,7 +98,7 @@ Sur chaque switch, vérifier l'état du protocole STP :
 Switch#show spanning-tree
 ```
 
-![[CLI-switches.png]]
+![Description de l'image](docs/images/CLI-switches.png)
 
 ### Analyse de Switch2 (Root Bridge)
 
@@ -144,7 +144,8 @@ Vérifier la communication entre les PC :
 C:\>ping 192.168.1.1
 ```
 
-![[ping-cisco.png]]
+![Description de l'image](docs/images/ping-cisco.png)
+
 ## Step 2 : Test de basculement (Failover)
 
 Cette étape démontre la capacité de STP à reconfigurer automatiquement la topologie en cas de panne du switch primaire. 
@@ -288,7 +289,7 @@ iface eth1 inet static
     netmask 255.255.255.0
 ```
 
-![[IPRouters.png]]
+![Description de l'image](docs/images/IPRouters.png)
 
 Redémarrer le service réseau sur les deux machines :
 
@@ -302,7 +303,8 @@ Vérifier la configuration :
 ip a
 ```
 
-![[IP-a routers + VIP.png]]
+![Description de l'image](docs/images/IP-a-routers+VIP.png)
+
 ## Configuration du routage et NAT
 
 ### Activation du forwarding IP
@@ -437,7 +439,6 @@ UCARP_OPTS="--shutdown"
 
 **Note** : Le paramètre `UCARP_ADVSKEW` détermine la priorité. Une valeur plus faible = priorité plus élevée.
 
-![[Screenshot From 2025-10-25 22-08-30.png]]
 ### Démarrage de UCARP
 
 Sur **R1** et **R2** :
@@ -452,8 +453,6 @@ rc-service ucarp start
 # Vérifier le statut
 rc-service ucarp status
 ```
-
-![[Screenshot From 2025-10-25 22-04-48.png]]
 
 Si un routeur tombe en panne, le second prend automatiquement le relais en récupérant la VIP, assurant ainsi une continuité de service sans intervention manuelle.
 
@@ -1088,7 +1087,8 @@ iface enp0s3 inet static
     dns-nameservers 8.8.8.8 8.8.4.4
 ```
 
-![[adressage backends.png]]
+![Description de l'image](docs/images/adressage-backends.png)
+
 Redémarrer le service réseau sur les deux machines :
 
 ```bash
@@ -1101,7 +1101,8 @@ Vérifier la configuration :
 ip a
 ```
 
-![[ip-a-Back.png]]
+![Description de l'image](docs/images/ip-a-Back.png)
+
 #### Installation des serveurs Backend
 
 Étape 1 : Installation des dépendances
@@ -1250,7 +1251,7 @@ vrrp_instance VI_BACKEND {
 }
 ```
 
-![[VIP-backs.png]]
+![Description de l'image](docs/images/VIP-backs.png)
 
 Démarrage de Keepalived sur les deux serveurs :
 
@@ -1265,7 +1266,6 @@ sudo systemctl start keepalived
 sudo systemctl status keepalived
 ```
 
-![[Screenshot From 2025-10-25 21-38-25.png]]
 
 Si un serveur backend tombe en panne, le second prend automatiquement le relais en récupérant la VIP, assurant ainsi une continuité de service sans intervention manuelle.
 
@@ -1352,8 +1352,6 @@ sudo ufw enable
 # Vérifier les règles
 sudo ufw status verbose
 ```
-
-![[Screenshot From 2025-10-25 21-40-34.png]]
 
 ## Tableau récapitulatif de la configuration
 
