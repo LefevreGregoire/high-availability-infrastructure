@@ -50,6 +50,8 @@ La documentation technique complète est disponible dans **[DOCUMENTATION.md](DO
 ---
 
 ## Architecture
+
+```
                     Internet
                         │
                 [Passerelle NAT]
@@ -65,9 +67,18 @@ La documentation technique complète est disponible dans **[DOCUMENTATION.md](DO
                         │
     ┌───────────────────┴───────────────────┐
     │                                       │
-
-[Équilibreur 1] [Équilibreur 2] 192.168.1.100 192.168.1.101 │ │ └──────────[VIP: 192.168.1.150]────────┘ │ ┌───────────────────┴───────────────────┐ │ │ [Serveur Backend 1] [Serveur Backend 2] 192.168.1.250 192.168.1.251 │ │ └──────────[VIP: 192.168.1.200]────────┘
-
+[Équilibreur 1]                      [Équilibreur 2]
+192.168.1.100                        192.168.1.101
+    │                                       │
+    └──────────[VIP: 192.168.1.150]────────┘
+                        │
+    ┌───────────────────┴───────────────────┐
+    │                                       │
+[Serveur Backend 1]                  [Serveur Backend 2]
+192.168.1.250                        192.168.1.251
+    │                                       │
+    └──────────[VIP: 192.168.1.200]────────┘
+```
 
 ---
 
@@ -97,30 +108,33 @@ La documentation technique complète est disponible dans **[DOCUMENTATION.md](DO
 ```bash
 git clone https://github.com/LefevreGregoire/high-availability-infrastructure.git
 cd high-availability-infrastructure
+```
 
-Déployer l'infrastructure
+### Déployer l'infrastructure
 
 Suivez la documentation complète dans DOCUMENTATION.md dans l'ordre :
 
-    Configuration de la topologie STP
-    Déploiement des routeurs R1 et R2
-    Configuration des équilibreurs de charge NGINX
-    Mise en place des serveurs backend
+1. Configuration de la topologie STP
+2. Déploiement des routeurs R1 et R2
+3. Configuration des équilibreurs de charge NGINX
+4. Mise en place des serveurs backend
 
-Plan d'adressage IP
-Équipement	Interface	Adresse IP	Passerelle	IP Virtuelle (VIP)
-Routeur 1	eth0	DHCP	-	-
-Routeur 1	eth1	192.168.1.252	-	192.168.1.254
-Routeur 2	eth0	DHCP	-	-
-Routeur 2	eth1	192.168.1.253	-	192.168.1.254
-Équilibreur 1	enp0s3	192.168.1.100	192.168.1.252	192.168.1.150
-Équilibreur 2	enp0s3	192.168.1.101	192.168.1.253	192.168.1.150
-Backend 1	enp0s3	192.168.1.250	192.168.1.252	192.168.1.200
-Backend 2	enp0s3	192.168.1.251	192.168.1.253	192.168.1.200
+### Plan d'adressage IP
 
-Structure du projet
-Code
+| Équipement | Interface | Adresse IP | Passerelle | IP Virtuelle (VIP) |
+|------------|-----------|------------|------------|--------------------|
+| Routeur 1 | eth0 | DHCP | - | - |
+| Routeur 1 | eth1 | 192.168.1.252 | - | 192.168.1.254 |
+| Routeur 2 | eth0 | DHCP | - | - |
+| Routeur 2 | eth1 | 192.168.1.253 | - | 192.168.1.254 |
+| Équilibreur 1 | enp0s3 | 192.168.1.100 | 192.168.1.252 | 192.168.1.150 |
+| Équilibreur 2 | enp0s3 | 192.168.1.101 | 192.168.1.253 | 192.168.1.150 |
+| Backend 1 | enp0s3 | 192.168.1.250 | 192.168.1.252 | 192.168.1.200 |
+| Backend 2 | enp0s3 | 192.168.1.251 | 192.168.1.253 | 192.168.1.200 |
 
+### Structure du projet
+
+```
 high-availability-infrastructure/
 ├── README.md                      # Vue d'ensemble
 ├── DOCUMENTATION.md               # Documentation technique complète
@@ -135,42 +149,58 @@ high-availability-infrastructure/
 │   └── scripts/                   # Scripts de vérification
 └── network-diagrams/
     └── packet-tracer-topology.pkt # Topologie Packet Tracer
+```
 
-Tests de validation
-Test de basculement des routeurs
-bash
+---
 
+## Tests de validation
+
+### Test de basculement des routeurs
+
+```bash
 # Sur Routeur 1
 ssh root@192.168.1.252
 rc-service ucarp stop
 # Vérifier que la VIP 192.168.1.254 bascule vers Routeur 2
+```
 
-Test de basculement de l'équilibreur
-bash
+### Test de basculement de l'équilibreur
 
+```bash
 # Sur Équilibreur 1
 ssh user@192.168.1.100
 sudo systemctl stop keepalived
 # Vérifier que la VIP 192.168.1.150 bascule vers Équilibreur 2
+```
 
-Test de basculement du backend
-bash
+### Test de basculement du backend
 
+```bash
 # Sur Backend 1
 ssh user@192.168.1.250
 sudo systemctl stop keepalived
 # Vérifier que la VIP 192.168.1.200 bascule vers Backend 2
+```
 
-Caractéristiques de performance
+---
 
-    Temps de basculement (Routeur) : < 3 secondes
-    Temps de basculement (Équilibreur) : < 2 secondes
-    Temps de basculement (Backend) : < 2 secondes
-    Convergence STP : 30-50 secondes
-    Connexions simultanées supportées : 1000+ (configurable)
+## Caractéristiques de performance
 
-Licence
+- **Temps de basculement (Routeur)** : < 3 secondes
+- **Temps de basculement (Équilibreur)** : < 2 secondes
+- **Temps de basculement (Backend)** : < 2 secondes
+- **Convergence STP** : 30-50 secondes
+- **Connexions simultanées supportées** : 1000+ (configurable)
 
-Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
-Auteur
+---
+
+## Licence
+
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+
+---
+
+## Auteur
+
+**Grégoire LEFEVRE** - EPSI SN2 2025
 
