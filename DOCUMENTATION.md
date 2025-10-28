@@ -1,4 +1,4 @@
-# TP DashOps - SN2 EPSI 2025 - Grégoire LEFEVRE 
+# TP DashOps - Infrastructure à haute disponibilité
 
 # Mise en place du protocole STP avec Cisco Packet Tracer
 
