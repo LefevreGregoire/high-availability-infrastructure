@@ -1,0 +1,92 @@
+## Configuration du service PHP Frontend
+
+Pour garantir la haute disponibilité du serveur PHP frontend, créez un service systemd qui le gérera automatiquement.
+
+### Sur NGINX01
+
+Créez le fichier de service :
+
+```bash
+sudo nano /etc/systemd/system/front-local.service
+```
+
+Contenu du fichier pour NGINX01 :
+
+INI
+
+```bash
+[Unit]
+Description=Frontend PHP Server on port 8001
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/html
+ExecStart=/usr/bin/php -S 127.0.0.1:8001 -t public
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Sur NGINX02
+
+Créez le fichier de service :
+
+```bash
+sudo nano /etc/systemd/system/front-local.service
+```
+
+Contenu du fichier pour NGINX02 (port différent) :
+
+INI
+
+```bash
+[Unit]
+Description=Frontend PHP Server on port 8002
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/html
+ExecStart=/usr/bin/php -S 127.0.0.1:8002 -t public
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Activation du service
+
+Sur **NGINX01** et **NGINX02** :
+
+```bash
+# Recharger la configuration systemd
+sudo systemctl daemon-reload
+
+# Activer le service au démarrage
+sudo systemctl enable front-local.service
+
+# Démarrer le service
+sudo systemctl start front-local.service
+
+# Vérifier le statut
+sudo systemctl status front-local.service
+```
+
+**Note** : Ne pas oublier de modifier l'upstream `frontend_servers` dans la configuration NGINX02 pour pointer vers le port 8002 :
+
+Nginx
+
+```bash
+upstream frontend_servers {
+    least_conn;
+    server 127.0.0.1:8002;  # Port 8002 sur NGINX02
+}
+```

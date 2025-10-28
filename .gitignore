@@ -1,0 +1,29 @@
+# VirtualBox
+*.vdi
+*.vmdk
+*.vbox
+*.vbox-prev
+
+# Packet Tracer backups
+*.pkt~
+
+# Logs
+*.log
+logs/
+
+# Secrets
+*password*
+*secret*
+.env
+*.key
+*.pem
+
+# System
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# IDE
+.vscode/
+.idea/

@@ -1,0 +1,47 @@
+## Configuration du Service Systemd
+
+Pour garantir la haute disponibilité, créez un service systemd qui relancera automatiquement le serveur backend en cas de panne.
+
+### Création du service
+
+Sur **BACKEND01** et **BACKEND02**, créer le fichier de service :
+
+```bash
+sudo nano /etc/systemd/system/managevmback.service
+```
+
+Contenu du fichier :
+
+```ini
+[Unit]
+Description=ManageVMBack API Service
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/ManageVMBack
+ExecStart=/usr/bin/php -S 0.0.0.0:8000 -t /opt/ManageVMBack/public
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Activation du service
+
+```bash
+# Recharger la configuration systemd
+sudo systemctl daemon-reload
+
+# Activer le service au démarrage
+sudo systemctl enable managevmback.service
+
+# Démarrer le service
+sudo systemctl start managevmback.service
+
+# Vérifier le statut
+sudo systemctl status managevmback.service
+```
